@@ -1,11 +1,16 @@
 package com.training.gradledemo;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import com.training.gradledemo.greet.Greeter;
+import org.joda.time.LocalTime;
 
-@SpringBootApplication
+
+//@SpringBootApplication
 public class GradleDemoApplication {
     public static void main(String[] args) {
-        SpringApplication.run(GradleDemoApplication.class, args);
+        LocalTime localTime = new LocalTime();
+        System.out.println("The current local time is: " + localTime.toString());
+
+        new Greeter().sayHello();
+//        SpringApplication.run(GradleDemoApplication.class, args);
     }
 }
