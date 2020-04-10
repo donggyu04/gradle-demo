@@ -4,6 +4,7 @@ plugins {
     id 'org.springframework.boot' version '2.2.6.RELEASE'
     id 'io.spring.dependency-management' version '1.0.9.RELEASE'
     id 'java'
+    id 'base' // for zip task
 }
 
 group = 'com.training'
@@ -28,6 +29,47 @@ dependencies {
     compile group: 'joda-time', name: 'joda-time', version: '2.10.5'
 }
 
+task copy(type: Copy, group: 'Custom', description: 'Copies sources to the dest directory') {
+    from 'src'
+    into 'dest'
+}
+
+task zip(type: Zip, group: 'Archive', description: 'Archives sources in a zip file') {
+    doFirst {
+        println('*** start:zip task ***')
+    }
+    def zipFileName = 'basic-demo-1.0.zip'
+    from 'src'
+    getArchiveFileName().convention(zipFileName)
+    getArchiveFileName().set(zipFileName)
+}
+
+// dependsOn test
+task aaa {
+    doLast {
+        println('<< This is A task! >>')
+    }
+}
+
+task hello(dependsOn:['aaa', 'bbb']) {
+    doFirst {
+        println('*** start:hello task ***')
+    }
+
+    doLast {
+        println('*** end:hello task ***')
+    }
+}
+
+task bbb {
+    doLast {
+        println("<< I'm task B!! >>")
+    }
+}
+//
+
 test {
     useJUnitPlatform()
 }
+
+build.dependsOn zip
