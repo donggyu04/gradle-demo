@@ -1,4 +1,12 @@
-//apply plugin: 'java'
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath group: 'commons-codec', name: 'commons-codec', version: '1.2'
+    }
+}
 
 plugins {
     id 'org.springframework.boot' version '2.2.6.RELEASE'
@@ -6,6 +14,7 @@ plugins {
     id 'java'
     id 'base' // for zip task
 }
+
 
 group = 'com.training'
 version = '0.0.1'
@@ -29,6 +38,8 @@ dependencies {
     compile group: 'joda-time', name: 'joda-time', version: '2.10.5'
 }
 
+defaultTasks 'aaa', 'bbb'
+
 task copy(type: Copy, group: 'Custom', description: 'Copies sources to the dest directory') {
     from 'src'
     into 'dest'
@@ -38,7 +49,7 @@ task zip(type: Zip, group: 'Archive', description: 'Archives sources in a zip fi
     doFirst {
         println('*** start:zip task ***')
     }
-    def zipFileName = 'basic-demo-1.0.zip'
+    String zipFileName = 'basic-demo-1.0.zip'
     from 'src'
     getArchiveFileName().convention(zipFileName)
     getArchiveFileName().set(zipFileName)
@@ -46,8 +57,10 @@ task zip(type: Zip, group: 'Archive', description: 'Archives sources in a zip fi
 
 // dependsOn test
 task aaa {
+    String message = 'This is aaa task'
     doLast {
-        println('<< This is A task! >>')
+        println("*** $message $hello.testProperty***")
+        println("*** ${message.toUpperCase()} ***")
     }
 }
 
@@ -59,14 +72,75 @@ task hello(dependsOn:['aaa', 'bbb']) {
     doLast {
         println('*** end:hello task ***')
     }
+
+    ext.testProperty = 'Extra test property'
 }
+// hello.dependsOn aaa, bbb
 
 task bbb {
     doLast {
-        println("<< I'm task B!! >>")
+        println("*** I'm task bbb ***")
     }
 }
+
+bbb.doLast {
+    println("*** Appended message ***")
+}
+
 //
+
+task loadStaticFiles {
+    doLast {
+        fileList('./src/main/resources/static').each { File file ->
+            if (file.isFile()) {
+                ant.loadfile(srcFile: file, property: file.name)
+                println " *** $file.name ***"
+                println "${ant.properties[file.name]}"
+            }
+        }
+    }
+}
+
+File[] fileList(String dir) {
+    return file(dir).listFiles({file -> file.isFile()} as FileFilter).sort()
+}
+
+task count {
+    doLast {
+        4.times {
+            print "$it "
+        }
+    }
+}
+
+task distribution {
+    doLast {
+        println "We build the zip with version=$version"
+    }
+}
+
+task release {
+    dependsOn 'distribution'
+    doLast {
+        println 'We release now'
+    }
+}
+
+gradle.taskGraph.whenReady { taskGraph ->
+    if (taskGraph.hasTask(":release")) {
+        version = '1.0'
+    } else {
+        version = '1.0-SNAPSHOT'
+    }
+}
+
+import org.apache.commons.codec.binary.Base64
+task encode {
+    doLast {
+        def encodedString = new Base64().encode('hello world\n'.getBytes())
+        println new String(encodedString)
+    }
+}
 
 test {
     useJUnitPlatform()
