@@ -5,6 +5,7 @@ buildscript {
 
     dependencies {
         classpath group: 'commons-codec', name: 'commons-codec', version: '1.2'
+        classpath group: 'javax.inject', name: 'javax.inject', version: '1'
     }
 }
 
@@ -147,3 +148,64 @@ test {
 }
 
 build.dependsOn zip
+
+//
+
+task showTaskInfo {
+    doLast {
+        println 'showTaskInfo was called'
+    }
+}
+
+//tasks.getByPath(':showTaskInfo')
+
+// Using a Groovy Closure
+showTaskInfo.dependsOn {
+    tasks.findAll { task -> task.name.startsWith('custom') }
+}
+
+import javax.inject.Inject
+class CustomTask extends DefaultTask {
+    final String message
+    final int number
+
+    @Inject
+    CustomTask(String message, int number) {
+        this.message = message
+        this.number = number
+    }
+}
+
+task customTask(type: CustomTask, constructorArgs: ['hello', 42]) {
+    doLast {
+        println "$message $number"
+    }
+}
+
+task taskX {
+    doLast {
+        println 'taskX'
+    }
+}
+
+import java.time.Duration
+task taskY {
+    timeout = Duration.ofSeconds(2)
+    doFirst {
+        println 'taskY before exception'
+        Thread.sleep(3000)
+        throw new StopExecutionException()
+    }
+
+    doLast {
+        println 'taskY'
+    }
+}
+
+//taskY.enabled = false
+//taskX.dependsOn taskY
+//taskY.mustRunAfter taskX // Error occurred with circular dependency
+//taskY.shouldRunAfter taskX
+taskY.finalizedBy taskX
+
+
