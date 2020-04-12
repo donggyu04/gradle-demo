@@ -15,9 +15,7 @@ plugins {
     id 'base' // for zip task
 }
 
-
 group = 'com.training'
-version = '0.0.1'
 
 sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
@@ -28,6 +26,11 @@ repositories {
 
 project.archivesBaseName = 'replaced-jar-name'
 project.version = '1.0.0'
+
+ext {
+    springVersion = "3.1.0.RELEASE"
+    emailNotification = "build@master.org"
+}
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -49,10 +52,14 @@ task zip(type: Zip, group: 'Archive', description: 'Archives sources in a zip fi
     doFirst {
         println('*** start:zip task ***')
     }
-    String zipFileName = 'basic-demo-1.0.zip'
+    archiveBaseName = 'basic-demo';
     from 'src'
-    getArchiveFileName().convention(zipFileName)
-    getArchiveFileName().set(zipFileName)
+
+    doLast {
+        println archiveFileName.get()
+        println relativePath(destinationDirectory)
+        println relativePath(archiveFile)
+    }
 }
 
 // dependsOn test
@@ -195,4 +202,59 @@ task taskY {
 //taskY.shouldRunAfter taskX
 taskY.finalizedBy taskX
 
+sourceSets.all { ext.purpose = 'default' }
+sourceSets {
+    main {
+        purpose = 'production'
+    }
+    test {
+        purpose = 'test'
+    }
+    plugin {
+        purpose = 'production'
+    }
+}
 
+task printProjectProperties {
+    doFirst {
+        println "root dir is : $rootDir"
+        println "${buildDir.getPath()}, ${projectDir.getPath()}"
+        println "ext $springVersion $emailNotification"
+        sourceSets.matching { it.purpose == 'production' }.each { println it.name }
+    }
+}
+
+task configure {
+    doLast {
+        def pos = new java.text.FieldPosition(0)
+        // Apply the script
+        apply from: 'properties.gradle', to: pos
+
+        println pos.beginIndex
+        println pos.endIndex
+    }
+}
+
+task printRuntimeClassapth {
+    doFirst {
+        project.configurations.runtimeClasspath.files.each {
+            File file -> println file.getName()
+        }
+    }
+}
+
+task list {
+    doLast {
+        File srcDir
+        // Create a file collection using a closure
+        def collection = layout.files { srcDir.listFiles() }
+
+        srcDir = file('src')
+        println "Contents of $srcDir.name"
+        collection.collect { relativePath(it) }.sort().each { println it }
+
+        srcDir = file('src2')
+        println "Contents of $srcDir.name"
+        collection.collect { relativePath(it) }.sort().each { println it }
+    }
+}
