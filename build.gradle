@@ -258,3 +258,32 @@ task list {
         collection.collect { relativePath(it) }.sort().each { println it }
     }
 }
+
+project.ext.addSomeTask = true
+afterEvaluate { project ->
+    if (project.addSomeTask) {
+        println "'addSomeTask' property is exist in $project"
+    }
+}
+
+gradle.afterProject { project ->
+    if (project.state.failure) {
+        println "Evaluation of $project FAILED"
+    } else {
+        println "Evaluation of $project succeeded"
+    }
+}
+
+task configurePhase {
+    println 'this is configuration phase'
+}
+
+// hook for task execution.
+//gradle.taskGraph.beforeTask { Task task ->
+//
+//}
+//
+//gradle.taskGraph.afterTask { Task task, TaskState state ->
+//
+//}
+
