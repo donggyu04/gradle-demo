@@ -13,4 +13,31 @@
 //DEBUG
 //Debug messages
 
-println 'hello'
+println 'A message which is logged at QUIET level'
+
+// below 4 find of log will be printed as default.
+logger.quiet('An info log message which is always logged.')
+logger.error('An error log message.')
+logger.warn('A warning log message.')
+logger.lifecycle('A lifecycle info log message.')
+
+logger.info('An info log message.')
+logger.debug('A debug log message.')
+logger.trace('A trace log message.')
+
+logger.info('A {} log message', 'info')
+
+import org.slf4j.LoggerFactory
+def slf4jLogger = LoggerFactory.getLogger('some-logger')
+slf4jLogger.quiet('An info log message logged using SLF4j')
+
+logging.captureStandardOutput LogLevel.INFO
+println 'A message which is logged at INFO level'
+
+task logInfo {
+    logging.captureStandardOutput LogLevel.INFO
+    doFirst {
+        // 위 project object의 logging manager 설정과는 무관하게 동작. task 내에서 다시 logging manager 설정을 해줘야 함.
+        println 'A task message which is logged at INFO level in "logInfo" task'
+    }
+}
