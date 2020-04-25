@@ -1,0 +1,16 @@
+// ./gradlew -b ./gradle-sample/logging.build.gradle
+
+//ERROR
+//Error messages
+//QUIET
+//Important information messages
+//WARNING
+//Warning messages
+//LIFECYCLE
+//Progress information messages
+//INFO
+//Information messages
+//DEBUG
+//Debug messages
+
+println 'hello'
