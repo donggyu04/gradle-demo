@@ -1,6 +1,7 @@
 buildscript {
     repositories {
         mavenCentral()
+        jcenter()
     }
 
     dependencies {
@@ -13,6 +14,7 @@ plugins {
     id 'io.spring.dependency-management' version '1.0.9.RELEASE'
     id 'java'
     id 'base' // for zip task
+    id 'nebula.lint' version '16.7.2'
 }
 
 group = 'com.training'
@@ -32,7 +34,10 @@ ext {
     emailNotification = "build@master.org"
 }
 
+gradleLint.rules = ['all-dependency'] // add as many rules here as you'd like
+
 dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
