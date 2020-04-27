@@ -1,5 +1,7 @@
 # Gradle demo
 
+## Authoring gradle build
+
 1. Learning Basic
    - [Introducing the Basics of Build Scripts](https://docs.gradle.org/current/userguide/tutorial_using_tasks.html)
    - [Working with task](https://docs.gradle.org/current/userguide/more_about_tasks.html)
@@ -11,3 +13,9 @@
 2. Authoring Sustainable Builds
    - [Organizing Gradle Projects](https://docs.gradle.org/current/userguide/organizing_gradle_projects.html)
    - [Following the best practice](https://docs.gradle.org/current/userguide/authoring_maintainable_build_scripts.html)
+   
+## Running gradle build
+
+1. Customizing Execution
+   - [Configuring the build Environment](https://docs.gradle.org/current/userguide/build_environment.html)
+   - [Configuring the gradle daemon](https://docs.gradle.org/current/userguide/gradle_daemon.html)
